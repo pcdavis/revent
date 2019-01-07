@@ -7,7 +7,7 @@ const emptyEvent = {
   city: "",
   venue: "",
   hostedBy: ""
-}
+};
 
 class EventForm extends Component {
   state = {
@@ -15,24 +15,29 @@ class EventForm extends Component {
   };
 
   componentDidMount() {
-    if(this.props.selectedEvent !== null){
+    if (this.props.selectedEvent !== null) {
       this.setState({
         event: this.props.selectedEvent
-      })
+      });
     }
   }
-  
+
   componentWillReceiveProps(nextProps) {
-    if(nextProps.selectedEvent !== this.state.event){
+    if (nextProps.selectedEvent !== this.state.event) {
       this.setState({
         event: nextProps.selectedEvent || emptyEvent
-      })
+      });
     }
   }
 
   onFormSubmit = e => {
     e.preventDefault();
-    this.props.createEvent(this.state.event);
+    console.log('event id is ', this.state.event.id)
+    if (this.state.event.id) {
+      this.props.updateEvent(this.state.event);
+    } else {
+      this.props.createEvent(this.state.event);
+    }
   };
 
   onInputChange = e => {

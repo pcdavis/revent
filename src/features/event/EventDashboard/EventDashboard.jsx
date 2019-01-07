@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import cuid from 'cuid';
+import cuid from "cuid";
 import { Grid, Button } from "semantic-ui-react";
 import EventList from "../EventList/EventList";
 import EventForm from "../EventForm/EventForm";
@@ -56,36 +56,57 @@ const eventsDashboard = [
 ];
 
 class EventDashboard extends Component {
+  state = {
+    events: eventsDashboard,
+    isOpen: false,
+    selectedEvent: null
+  };
 
-    state = {
-      events: eventsDashboard,
-      isOpen: false,
-      selectedEvent: null
-    };
-
-
-  handleFormOpen= ()=> {
+  handleFormOpen = () => {
     this.setState({ isOpen: true, selectedEvent: null });
   };
 
-  handleCancel= ()=> {
+  handleCancel = () => {
     this.setState({ isOpen: false });
   };
 
-  handleEditEvent = (eventToUpdate) => (e)=> {
+  handleUpdateEvent = (updatedEvent) => {
     this.setState({
-      selectedEvent: eventToUpdate,
-      isOpen: true
-    });
+      events: this.state.events.map( event => {
+        if(event.id === updatedEvent.id){
+          return Object.assign({}, updatedEvent)
+        } else {
+          return event
+        }
+      }),
+      isOpen: false,
+      selectedEvent: null
+    })
   }
 
-  handleCreateEvent= (newEvent)=> {
+  handleOpenEvent = (eventToOpen) => (e) => {
+    this.setState({
+      selectedEvent: eventToOpen,
+      isOpen: true
+    });
+  };
+
+  handleCreateEvent = newEvent => {
     newEvent.id = cuid();
-    newEvent.hostPhotoURL = '/assets/user.png'
-    const updatedEvents = [...this.state.events, newEvent];
+    newEvent.hostPhotoURL = "/assets/user.png";
+    const updatedEvents = [newEvent,...this.state.events];
     this.setState({
       events: updatedEvents,
       isOpen: false
+    });
+  };
+
+  handleDeleteEvent = (eventId) => ()=> {
+    const newEvents = this.state.events.filter( (eachEvent)=> {
+      return eachEvent.id  !== eventId 
+    } )
+    this.setState({
+      events: newEvents
     })
   }
 
@@ -94,11 +115,26 @@ class EventDashboard extends Component {
     return (
       <Grid>
         <Grid.Column width={10}>
-          <EventList onEventEdit={this.handleEditEvent} events={this.state.events} />
+          <EventList
+            onEventOpen={this.handleOpenEvent}
+            deleteEvent={this.handleDeleteEvent}
+            events={this.state.events}
+          />
         </Grid.Column>
         <Grid.Column width={6}>
-          <Button positive content="Create Event" onClick={this.handleFormOpen} />
-          {this.state.isOpen && <EventForm selectedEvent={selectedEvent} createEvent={this.handleCreateEvent} handleCancel = {this.handleCancel} />}
+          <Button
+            positive
+            content="Create Event"
+            onClick={this.handleFormOpen}
+          />
+          {this.state.isOpen && (
+            <EventForm
+              selectedEvent={selectedEvent}
+              createEvent={this.handleCreateEvent}
+              updateEvent={this.handleUpdateEvent}
+              handleCancel={this.handleCancel}
+            />
+          )}
         </Grid.Column>
       </Grid>
     );
