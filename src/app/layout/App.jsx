@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import { Container } from "semantic-ui-react";
 import { Route, Switch } from "react-router-dom";
 import EventDashboard from "../../features/event/EventDashboard/EventDashboard";

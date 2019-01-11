@@ -14,6 +14,7 @@ class EventForm extends Component {
     event: emptyEvent
   };
 
+  //If user is opening an existing event, then props.selectedEvent will contain an event that was passed down from EventDashboar to populate the fields
   componentDidMount() {
     if (this.props.selectedEvent !== null) {
       this.setState({
@@ -21,28 +22,30 @@ class EventForm extends Component {
       });
     }
   }
-
+//----------If user clicks on a different event while form is open
   componentWillReceiveProps(nextProps) {
     if (nextProps.selectedEvent !== this.state.event) {
+      console.log('%c EventForm-ComponentWillReceiveProps-nextProps -','color: red', nextProps)
       this.setState({
         event: nextProps.selectedEvent || emptyEvent
       });
     }
   }
-
+//-----------Logic to choose correct action creator --------
   onFormSubmit = e => {
     e.preventDefault();
-    console.log('event id is ', this.state.event.id)
     if (this.state.event.id) {
-      this.props.updateEvent(this.state.event);
+      console.log('%c EventForm - onFormSubmit-Update','color:green')
+      this.props.myUpdateEvent(this.state.event);
     } else {
+      console.log('%c EventForm - onFormSubmit-createEvent called','color:blue')
       this.props.createEvent(this.state.event);
     }
   };
-
+//----------Local state used to keep track of field changes-------
   onInputChange = e => {
     console.table(this.state.event);
-    const newEvent = this.state.event; // In order to set the state of an object with multiple changing field values, you have to first capture all the current object property values in a new object, then update the specific property with the event name and value and then completely replace the object that is stored in the state object.
+    const newEvent = this.state.event; 
     newEvent[e.target.name] = e.target.value;
     this.setState({
       event: newEvent
